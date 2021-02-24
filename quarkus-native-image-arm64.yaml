@@ -1,0 +1,44 @@
+schema_version: 1
+version: "SNAPSHOT"
+from: "registry.access.redhat.com/ubi8/ubi-minimal@sha256:7ff335482b7df1c08ad0b63f4daece1faddfbea95eceaa4aad53392e3b6da0b2"
+
+
+name: "automatiko/ubi-quarkus-native-image-arm64"
+
+labels:
+- name: "io.k8s.description"
+  value: "Quarkus.io executable image providing the `native-image` executable for ARM64."
+- name: "io.k8s.display-name"
+  value: "Quarkus.io executable (GraalVM Native) for ARM64"
+- name: "io.openshift.tags"
+  value: "executable,java,quarkus,native,arm64"
+- name: "maintainer"
+  value: "Automatiko Team <automatiko-dev@googlegroups.com>"
+
+packages:
+  manager: microdnf
+
+modules:
+  repositories:
+  - path: modules
+  install:
+  - name: common-packages
+  - name: glibc-langpack-en
+  - name: encoding
+  - name: add-quarkus-user
+  - name: add-project-dir
+  - name: graalvm-arm64
+    version: "21.0.0.2-java11"
+envs:
+- name: "PATH"
+  value: "$PATH:$JAVA_HOME/bin"
+
+volumes:
+- name: "volume.project"
+  path: "/project"
+
+run:
+  user: 1001
+  workdir: "/project"
+  entrypoint:
+  - "native-image"
